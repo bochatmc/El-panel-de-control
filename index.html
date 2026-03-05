@@ -3,55 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Michal Dashboard</title>
-    <style>
-        body { background-color: #121212; color: white; font-family: Arial, sans-serif; }
-        header { text-align: center; padding: 1em; }
-        .timer { font-size: 2em; margin: 20px 0; }
-        .activity-log { margin: 20px; }
-        .log-entry { background: #1e1e1e; padding: 10px; margin: 5px; border-radius: 5px;}
-    </style>
+    <title>Michal Control Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Welcome to the Michal Dashboard</h1>
-        <div class="timer" id="timer"></div>
-    </header>
-    <div class="activity-log" id="activity-log"></div>
-
+    <h1>Michal Control Panel</h1>
+    <div id="logs"></div>
     <script>
-        // Timer Functionality
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('timer').innerText = now.toUTCString();
-        }
-        setInterval(updateTime, 1000);
-        updateTime();
+        const supabaseUrl = 'https://YOUR_SUPABASE_URL';
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Activity Log Functionality using Supabase
-        const { createClient } = supabase;
-        const supabaseUrl = 'YOUR_SUPABASE_URL';
-        const supabaseKey = 'YOUR_SUPABASE_KEY';
-        const supabase = createClient(supabaseUrl, supabaseKey);
-
-        async function fetchActivityLog() {
+        async function logActivity(action) {
             const { data, error } = await supabase
-                .from('activity_log')
-                .select('*');
-
-            if (error) {
-                console.error('Error fetching activity log:', error);
-            } else {
-                const logElement = document.getElementById('activity-log');
-                data.forEach(log => {
-                    const logEntry = document.createElement('div');
-                    logEntry.className = 'log-entry';
-                    logEntry.innerText = `${log.timestamp}: ${log.action}`;
-                    logElement.appendChild(logEntry);
-                });
-            }
+              .from('activity_log')
+              .insert([{
+                  action: action,
+                  gmt_time: new Date().toISOString()
+              }]);
+            if (error) console.error('Error logging activity:', error);
+            else console.log('Activity logged:', data);
         }
-        fetchActivityLog();
+
+        // Example usage
+        logActivity('Loaded Michal Control Panel');
+
+        // Display logs function can be added here
     </script>
 </body>
 </html>
