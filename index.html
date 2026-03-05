@@ -3,64 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Panel</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.27.1/dist/umd/supabase.min.js"></script>
+    <title>El Panel de Control</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.2.0/dist/umd/supabase.js"></script>
 </head>
 <body>
-    <h1>Control Panel</h1>
-    <div>
-        <button id="statusButton">Status: CONFINADO</button>
-        <button id="timerButton">Start Timer</button>
-    </div>
-    <div id="directrices">
-        <h2>Directrices</h2>
-        <p>Insert guidelines here...</p>
-    </div>
+    <h1>Welcome to El Panel de Control</h1>
     <script>
-        // Supabase Client Initialization
-        const supabaseUrl = 'https://fqhgvjnbxyiwhajedwut.supabase.co';
-        const supabaseKey = 'sb_publishable_R1SJPawU56LPtwjjI-mebA_YovmaKDb';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Activity Logging
-        async function logActivity(action) {
-            const { data, error } = await supabase
-                .from('activity_log')
-                .insert([{ action: action, timestamp: new Date().toISOString() }]);
-            if (error) console.error('Error logging activity:', error);
-        }
-
-        // Status Control
-        const statusButton = document.getElementById('statusButton');
-        statusButton.addEventListener('click', async () => {
-            let newStatus = statusButton.innerText === 'Status: CONFINADO' ? 'ABIERTO' : 'CONFINADO';
-            statusButton.innerText = 'Status: ' + newStatus;
-            await logActivity('Changed status to ' + newStatus);
-        });
-
-        // Timer Functionality
-        const timerButton = document.getElementById('timerButton');
-        let timerInterval;
-
-        timerButton.addEventListener('click', () => {
-            if (!timerInterval) {
-                timerInterval = setInterval(() => {
-                    console.log('Timer running...');
-                }, 1000);
-                timerButton.innerText = 'Stop Timer';
-            } else {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                timerButton.innerText = 'Start Timer';
-                logActivity('Timer stopped.');
-            }
-        });
-
-        // WhatsApp Notification
-        async function sendWhatsAppNotification(message) {
-            // Implement WhatsApp API integration here
-            console.log('WhatsApp Notification Sent: ', message);
-        }
+        const supabaseUrl = 'your-supabase-url';
+        const supabaseKey = 'your-supabase-key';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // Additional initialization code
     </script>
 </body>
 </html>
