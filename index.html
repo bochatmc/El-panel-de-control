@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Panel de Control</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.2.0/dist/umd/supabase.js"></script>
+    <title>Michal Control</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Welcome to El Panel de Control</h1>
+    <div class="badge">New Badge Text</div>
+    <h1>New H1 Title</h1>
     <script>
-        const supabaseUrl = 'your-supabase-url';
-        const supabaseKey = 'your-supabase-key';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        // Additional initialization code
+        // Ensure to use the correct Supabase initialization
+        const { createClient } = supabase;
+        const supabaseUrl = '<YOUR_SUPABASE_URL>';
+        const supabaseKey = '<YOUR_SUPABASE_KEY>';
+        window.supabase = createClient(supabaseUrl, supabaseKey);
     </script>
 </body>
 </html>
