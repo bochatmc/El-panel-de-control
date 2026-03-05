@@ -2,53 +2,72 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control - 950321</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Control de Michal</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial; background: #020617; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .card { background: #1e293b; padding: 2rem; border-radius: 20px; max-width: 400px; text-align: center; }
-        h1 { color: #60a5fa; margin-bottom: 1rem; }
-        .timer { font-size: 2.5rem; font-weight: bold; color: #3b82f6; margin: 1.5rem 0; }
-        button { background: #2563eb; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; margin: 0.5rem; cursor: pointer; }
-        button:hover { background: #1d4ed8; }
-        .red { background: #dc2626; }
-        .red:hover { background: #b91c1c; }
+        .card { background: #1e293b; padding: 2rem; border-radius: 20px; max-width: 400px; border: 1px solid #334155; }
+        h1 { color: #60a5fa; margin-bottom: 1rem; text-align: center; }
+        .timer { font-size: 2.5rem; font-weight: bold; color: #3b82f6; margin: 1.5rem 0; text-align: center; }
+        button { background: #2563eb; color: white; border: none; padding: 1rem; border-radius: 8px; margin: 0.5rem; cursor: pointer; width: 100%; font-weight: bold; }
+        button.red { background: #dc2626; }
+        button:hover { opacity: 0.9; }
+        .timestamp { background: rgba(15,23,42,0.5); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center; font-size: 0.9rem; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Sujeto 950321</h1>
-        <p>Propiedad de Yanina Colombo</p>
-        <div class="timer" id="timer">00:00:00</div>
-        <button onclick="setStatus('CONFINADO')">Jaula Cerrada</button>
-        <button class="red" onclick="setStatus('ABIERTO')">Abierto / Higiene</button>
-        <button onclick="share()">Notificar</button>
-    </div>
-    <script>
-        let status = localStorage.getItem('status') || 'CONFINADO';
-        const start = new Date('2026-03-04T20:00:00');
-        function update() {
-            const now = new Date();
-            const diff = now - start;
-            const h = Math.floor(diff / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-            document.getElementById('timer').textContent = 
-                (h < 10 ? '0' : '') + h + ':' + 
-                (m < 10 ? '0' : '') + m + ':' + 
-                (s < 10 ? '0' : '') + s;
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        function App() {
+            const [timer, setTimer] = useState("00:00:00");
+            const [status, setStatus] = useState(() => localStorage.getItem('status') || "CONFINADO");
+            const [time, setTime] = useState(() => localStorage.getItem('timestamp') || "Nunca");
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    const start = new Date('2026-03-04T20:00:00');
+                    const now = new Date();
+                    const diff = now - start;
+                    if (diff > 0) {
+                        const h = Math.floor(diff / 3600000);
+                        const m = Math.floor((diff % 3600000) / 60000);
+                        const s = Math.floor((diff % 60000) / 1000);
+                        setTimer(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+                    }
+                }, 1000);
+                return () => clearInterval(interval);
+            }, []);
+
+            function changeStatus(s) {
+                setStatus(s);
+                localStorage.setItem('status', s);
+                const now = new Date().toLocaleString('es-ES');
+                setTime(now);
+                localStorage.setItem('timestamp', now);
+                
+                const code = s === 'CONFINADO' ? 'C' : 'A';
+                const url = window.location.href.split('?')[0].replace('index.html', 'yanina.html') + '?s=' + code;
+                const msg = `Estado: ${s}. Verifica: ${url}`;
+                window.open(`https://wa.me/34657442002?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            return (
+                <div className="card">
+                    <h1>Michal - Panel de Control</h1>
+                    <div className="timer">{timer}</div>
+                    <p style={{textAlign:'center'}}>Estado: <strong>{status}</strong></p>
+                    <button onClick={() => changeStatus('CONFINADO')}>Jaula Cerrada</button>
+                    <button className="red" onClick={() => changeStatus('ABIERTO / HIGIENE')}>Abierto / Higiene</button>
+                    <div className="timestamp">Última actualización: <br/><strong>{time}</strong></div>
+                </div>
+            );
         }
-        function setStatus(s) { 
-            status = s; 
-            localStorage.setItem('status', s); 
-            alert('Estado: ' + s); 
-        }
-        function share() { 
-            window.open('https://wa.me/?text=Estado: ' + status, '_blank'); 
-        }
-        update();
-        setInterval(update, 1000);
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
