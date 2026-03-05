@@ -25,6 +25,21 @@
             max-width: 450px; 
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .badge {
+            background: rgba(100, 116, 139, 0.2);
+            border: 1px solid #64748b;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            color: #cbd5e1;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 1.5rem;
         }
         .header {
             text-align: center;
@@ -149,27 +164,12 @@
             font-size: 0.75rem;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.3s;
             border: 1px solid #334155;
-        }
-        button.confined-active {
-            background: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-        }
-        button.open-active {
-            background: #dc2626;
-            color: white;
-            border-color: #dc2626;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
-        }
-        button.inactive {
             background: #334155;
             color: #64748b;
+            opacity: 0.5;
         }
         button:disabled {
-            opacity: 0.5;
             cursor: not-allowed;
         }
         .notify-btn {
@@ -188,11 +188,7 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-        }
-        .notify-btn:hover { opacity: 0.9; }
-        .notify-btn:disabled {
             opacity: 0.5;
-            cursor: not-allowed;
         }
         .directrices {
             background: rgba(15, 23, 42, 0.6);
@@ -248,19 +244,6 @@
             text-transform: uppercase;
             letter-spacing: 2px;
         }
-        .badge {
-            background: rgba(100, 116, 139, 0.2);
-            border: 1px solid #64748b;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.65rem;
-            color: #cbd5e1;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
         .info-box {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid #334155;
@@ -280,6 +263,132 @@
             font-size: 0.9rem;
             color: #60a5fa;
             font-weight: 700;
+        }
+        
+        /* Activity Log Styles */
+        .activity-section {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .activity-header {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+        .activity-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #3b82f6;
+            color: white;
+            border: 1px solid #3b82f6;
+            border-radius: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .activity-btn:hover { background: #2563eb; }
+        .activity-list {
+            display: none;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        .activity-list.show { display: block; }
+        .activity-item {
+            font-size: 0.7rem;
+            color: #cbd5e1;
+            padding: 0.75rem;
+            border-bottom: 1px solid #334155;
+            font-family: 'Courier New', monospace;
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-time { color: #60a5fa; font-weight: 700; }
+        .activity-action { color: #a855f7; }
+        
+        /* Annex Section */
+        .annex-section {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .annex-header {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+        .annex-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #8b5cf6;
+            color: white;
+            border: 1px solid #8b5cf6;
+            border-radius: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .annex-btn:hover { background: #7c3aed; }
+        .annex-form {
+            display: none;
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 8px;
+        }
+        .annex-form.show { display: block; }
+        .annex-textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            resize: vertical;
+            min-height: 120px;
+            margin-bottom: 1rem;
+        }
+        .annex-textarea:focus { outline: none; border-color: #3b82f6; }
+        .annex-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        .annex-submit:hover { opacity: 0.9; }
+        .annex-note {
+            font-size: 0.6rem;
+            color: #60a5fa;
+            margin-top: 0.5rem;
+            font-style: italic;
         }
     </style>
 </head>
@@ -355,11 +464,31 @@
                 </ul>
             </div>
 
+            <div class="activity-section">
+                <p class="activity-header">Registro de Actividad</p>
+                <button class="activity-btn" onclick="toggleActivityLog()">📋 Revisar el Registro de Actividad</button>
+                <div class="activity-list" id="activityList">
+                    <div id="activityContent">Cargando actividades...</div>
+                </div>
+            </div>
+
+            <div class="annex-section">
+                <p class="annex-header">Anexos y Enmiendas</p>
+                <button class="annex-btn" onclick="toggleAnnexForm()">📝 Introducir el Anexo Nuevo</button>
+                <div class="annex-form" id="annexForm">
+                    <textarea class="annex-textarea" id="annexText" placeholder="Escriba aquí el contenido del nuevo anexo..."></textarea>
+                    <button class="annex-submit" onclick="legalizeAnnex()">✓ Legalizar el Anexo</button>
+                    <p class="annex-note">📬 A notificar a tu propiedad de manera inmediata</p>
+                </div>
+            </div>
+
             <div class="footer">Vinculación Digital Perpetua</div>
         </div>
     </div>
 
     <script>
+        let activityLog = JSON.parse(localStorage.getItem('michal_activity_log')) || [];
+
         function checkStatus() {
             const status = localStorage.getItem('status') || 'CONFINADO';
             const confined = status === 'CONFINADO';
@@ -396,14 +525,66 @@
         const s = params.get('s');
         if (s) {
             const status = s === 'C' ? 'CONFINADO' : 'ABIERTO / HIGIENE';
+            const now = new Date().toLocaleString('es-ES');
             localStorage.setItem('status', status);
-            localStorage.setItem('timestamp', new Date().toLocaleString('es-ES'));
+            localStorage.setItem('timestamp', now);
+            
+            const gmtTime = new Date().toLocaleString('en-US', { timeZone: 'GMT' });
+            activityLog.unshift({
+                time: gmtTime,
+                action: status,
+                timestamp: Date.now()
+            });
+            localStorage.setItem('michal_activity_log', JSON.stringify(activityLog));
+        }
+        
+        function toggleActivityLog() {
+            const list = document.getElementById('activityList');
+            list.classList.toggle('show');
+            if (list.classList.contains('show')) {
+                loadActivityLog();
+            }
+        }
+        
+        function loadActivityLog() {
+            const content = document.getElementById('activityContent');
+            if (activityLog.length === 0) {
+                content.innerHTML = '<div class="activity-item">Sin actividades registradas</div>';
+                return;
+            }
+            content.innerHTML = activityLog.map(log => `
+                <div class="activity-item">
+                    <span class="activity-time">${log.time}</span> - 
+                    <span class="activity-action">${log.action}</span>
+                </div>
+            `).join('');
+        }
+        
+        function toggleAnnexForm() {
+            document.getElementById('annexForm').classList.toggle('show');
+        }
+        
+        function legalizeAnnex() {
+            const text = document.getElementById('annexText').value;
+            if (!text.trim()) {
+                alert('Por favor, escribe el contenido del anexo');
+                return;
+            }
+            
+            const gmt = new Date().toLocaleString('en-US', { timeZone: 'GMT' });
+            const message = `🔐 NUEVO ANEXO LEGALIZADO\n\nSujeto: 950321\nFecha GMT: ${gmt}\n\nContenido:\n${text}\n\nPropiedad de Yanina Colombo`;
+            
+            window.open('https://wa.me/447493443637?text=' + encodeURIComponent(message), '_blank');
+            
+            document.getElementById('annexText').value = '';
+            document.getElementById('annexForm').classList.remove('show');
         }
         
         checkStatus();
         updateTimer();
         setInterval(updateTimer, 1000);
         setInterval(checkStatus, 500);
+        loadActivityLog();
     </script>
 </body>
 </html>
