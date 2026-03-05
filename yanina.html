@@ -3,65 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Yanina</title>
+    <title>Panel Yanina</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial; background: #020617; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .card { background: #1e293b; padding: 2rem; border-radius: 20px; max-width: 400px; border: 1px solid #334155; }
-        h1 { color: #60a5fa; margin-bottom: 1rem; text-align: center; }
-        .timer { font-size: 2.5rem; font-weight: bold; color: #3b82f6; margin: 1.5rem 0; text-align: center; }
-        .status { background: rgba(15,23,42,0.5); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center; }
-        .timestamp { background: rgba(15,23,42,0.5); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center; font-size: 0.9rem; }
-        .badge { background: rgba(100,116,139,0.3); padding: 0.5rem; border-radius: 4px; text-align: center; margin-bottom: 1rem; font-size: 0.8rem; }
+        body { font-family: Arial, sans-serif; background: #020617; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .card { background: #1e293b; padding: 2rem; border-radius: 15px; max-width: 400px; border: 1px solid #334155; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .badge { background: rgba(100, 116, 139, 0.3); padding: 0.75rem; border-radius: 8px; text-align: center; margin-bottom: 1rem; font-size: 0.85rem; text-transform: uppercase; font-weight: bold; }
+        h1 { color: #60a5fa; margin-bottom: 1rem; text-align: center; font-size: 1.5rem; }
+        .subtitle { color: #94a3b8; text-align: center; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .timer { font-size: 3rem; font-weight: bold; color: #3b82f6; margin: 1.5rem 0; text-align: center; font-family: monospace; }
+        .section { background: rgba(15,23,42,0.5); padding: 1rem; border-radius: 8px; margin: 1rem 0; border: 1px solid #334155; }
+        .label { color: #64748b; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .status { font-size: 1.2rem; font-weight: bold; color: #f59e0b; }
+        .status.open { color: #ef4444; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .timestamp { color: #60a5fa; font-size: 0.9rem; }
+        .disabled { opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body>
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useEffect } = React;
+        
         function App() {
             const [timer, setTimer] = useState("00:00:00");
             const [status, setStatus] = useState("CONFINADO");
-            const [time, setTime] = useState("Nunca");
+            const [timestamp, setTimestamp] = useState("Esperando actualización...");
 
             useEffect(() => {
+                // Verificar si Michal envió un update
                 const params = new URLSearchParams(window.location.search);
-                const s = params.get('s');
-                if (s) {
-                    const newStatus = s === 'C' ? 'CONFINADO' : 'ABIERTO / HIGIENE';
+                const syncCode = params.get('s');
+                if (syncCode) {
+                    const newStatus = syncCode === 'C' ? 'CONFINADO' : 'ABIERTO / HIGIENE';
                     setStatus(newStatus);
-                    setTime(new Date().toLocaleString('es-ES'));
+                    const now = new Date().toLocaleString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    setTimestamp(now);
                 }
 
-                const interval = setInterval(() => {
-                    const start = new Date('2026-03-04T20:00:00');
+                const startDate = new Date('2026-03-04T20:00:00');
+                
+                const updateTimer = () => {
                     const now = new Date();
-                    const diff = now - start;
+                    const diff = now - startDate;
                     if (diff > 0) {
-                        const h = Math.floor(diff / 3600000);
-                        const m = Math.floor((diff % 3600000) / 60000);
-                        const s = Math.floor((diff % 60000) / 1000);
-                        setTimer(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+                        const totalSeconds = Math.floor(diff / 1000);
+                        const hours = Math.floor(totalSeconds / 3600);
+                        const minutes = Math.floor((totalSeconds % 3600) / 60);
+                        const seconds = totalSeconds % 60;
+                        setTimer(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
                     }
-                }, 1000);
+                };
+
+                updateTimer();
+                const interval = setInterval(updateTimer, 1000);
                 return () => clearInterval(interval);
             }, []);
 
             return (
                 <div className="card">
-                    <div className="badge">🔒 PANEL SOLO LECTURA - YANINA</div>
-                    <h1>Michal - Estado Actual</h1>
-                    <div className="timer">{timer}</div>
-                    <div className="status">
-                        <p>Estado: <strong style={{color: status === 'CONFINADO' ? '#f59e0b' : '#ef4444'}}>{status}</strong></p>
+                    <div className="badge">🔒 PANEL SOLO LECTURA</div>
+                    <h1>👁️ Michal</h1>
+                    <p className="subtitle">Observado por Yanina</p>
+                    
+                    <div className="section">
+                        <p className="label">⏱️ Tiempo en Castidad</p>
+                        <div className="timer">{timer}</div>
                     </div>
-                    <div className="timestamp">Última actualización: <br/><strong>{time}</strong></div>
+
+                    <div className="section">
+                        <p className="label">Estado Físico</p>
+                        <p className={`status ${status === 'CONFINADO' ? '' : 'open'}`}>{status}</p>
+                    </div>
+
+                    <div className="section disabled">
+                        <button style={{padding: '0.8rem', background: '#334155', color: '#64748b', border: 'none', borderRadius: '6px', width: '100%', cursor: 'not-allowed', marginBottom: '0.5rem', textTransform: 'uppercase', fontWeight: 'bold'}}>
+                            🔒 Jaula Cerrada (Bloqueado)
+                        </button>
+                        <button style={{padding: '0.8rem', background: '#334155', color: '#64748b', border: 'none', borderRadius: '6px', width: '100%', cursor: 'not-allowed', textTransform: 'uppercase', fontWeight: 'bold'}}>
+                            🚿 Abierto / Higiene (Bloqueado)
+                        </button>
+                    </div>
+
+                    <div className="section">
+                        <p className="label">📲 Última Actualización</p>
+                        <p className="timestamp">{timestamp}</p>
+                    </div>
+
+                    <div className="section">
+                        <p className="label">📋 Contrato</p>
+                        <ul style={{fontSize: '0.9rem', marginLeft: '1rem', color: '#94a3b8'}}>
+                            <li>Castidad 24/7</li>
+                            <li>Fotos pre y post ducha</li>
+                            <li>Obediencia total</li>
+                        </ul>
+                    </div>
                 </div>
             );
         }
+
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
