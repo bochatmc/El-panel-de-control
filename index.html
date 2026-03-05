@@ -3,99 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Michal Control Panel</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background: #35424a;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            margin: 0;
-        }
-        footer {
-            text-align: center;
-            padding: 10px 0;
-            margin-top: 20px;
-            background: #35424a;
-            color: white;
-        }
-        #timer {
-            font-size: 24px;
-            color: green;
-        }
-        /* Additional styling can go here */
-    </style>
+    <title>Michal</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Michal Control Panel</h1>
+        <h1>Welcome to Michal's Control Panel</h1>
     </header>
-    <div class="container">
-        <h2>Activity Logging</h2>
-        <div id="activity-log"></div>
-        <h2>Timer</h2>
-        <div id="timer">00:00:00</div>
-    </div>
+    <main>
+        <section>
+            <h2>Dashboard</h2>
+            <p>Your content goes here.</p>
+        </section>
+    </main>
     <footer>
-        <p>&copy; 2026 Michal Control Panel</p>
+        <p>&copy; 2026 Michal. All Rights Reserved.</p>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.js"></script>
-    <script>
-        // Supabase integration
-        const supabaseUrl = 'YOUR_SUPABASE_URL';
-        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Timer functionality
-        let timerInterval;
-        let totalSeconds = 0;
-
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                totalSeconds++;
-                document.getElementById('timer').innerText = formatTime(totalSeconds);
-            }, 1000);
-        }
-
-        function formatTime(seconds) {
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = seconds % 60;
-            return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
-        }
-
-        function pad(num) {
-            return num < 10 ? '0' + num : num;
-        }
-
-        // Start activity logging
-        function logActivity(message) {
-            const logDiv = document.getElementById('activity-log');
-            const logEntry = document.createElement('div');
-            logEntry.textContent = message;
-            logDiv.prepend(logEntry);
-        }
-
-        // Initialize timer on load
-        window.onload = function() {
-            startTimer();
-            logActivity('Control Panel loaded at ' + new Date().toUTCString());
-        };
-    </script>
 </body>
 </html>
