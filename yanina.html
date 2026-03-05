@@ -298,7 +298,7 @@
         .activity-list {
             display: none;
             margin-top: 1rem;
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid #334155;
@@ -308,14 +308,37 @@
         .activity-list.show { display: block; }
         .activity-item {
             font-size: 0.7rem;
-            color: #cbd5e1;
             padding: 0.75rem;
-            border-bottom: 1px solid #334155;
+            border-left: 3px solid;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
             font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .activity-item:last-child { border-bottom: none; }
-        .activity-time { color: #60a5fa; font-weight: 700; }
-        .activity-action { color: #a855f7; }
+        .activity-item.confined {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+        .activity-item.open {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+        .activity-time { 
+            font-weight: 700;
+            font-size: 0.65rem;
+        }
+        .activity-action { 
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .activity-icon {
+            font-size: 1rem;
+            margin-right: 0.5rem;
+        }
         
         /* Annex Section */
         .annex-section {
@@ -487,8 +510,6 @@
     </div>
 
     <script>
-        let activityLog = JSON.parse(localStorage.getItem('michal_activity_log')) || [];
-
         function checkStatus() {
             const status = localStorage.getItem('status') || 'CONFINADO';
             const confined = status === 'CONFINADO';
@@ -521,23 +542,6 @@
             }
         }
         
-        const params = new URLSearchParams(window.location.search);
-        const s = params.get('s');
-        if (s) {
-            const status = s === 'C' ? 'CONFINADO' : 'ABIERTO / HIGIENE';
-            const now = new Date().toLocaleString('es-ES');
-            localStorage.setItem('status', status);
-            localStorage.setItem('timestamp', now);
-            
-            const gmtTime = new Date().toLocaleString('en-US', { timeZone: 'GMT' });
-            activityLog.unshift({
-                time: gmtTime,
-                action: status,
-                timestamp: Date.now()
-            });
-            localStorage.setItem('michal_activity_log', JSON.stringify(activityLog));
-        }
-        
         function toggleActivityLog() {
             const list = document.getElementById('activityList');
             list.classList.toggle('show');
@@ -548,16 +552,28 @@
         
         function loadActivityLog() {
             const content = document.getElementById('activityContent');
+            let activityLog = JSON.parse(localStorage.getItem('michal_activity_log')) || [];
+            
             if (activityLog.length === 0) {
-                content.innerHTML = '<div class="activity-item">Sin actividades registradas</div>';
+                content.innerHTML = '<div class="activity-item" style="border-left-color: #64748b; background: transparent; color: #64748b;">Sin actividades registradas</div>';
                 return;
             }
-            content.innerHTML = activityLog.map(log => `
-                <div class="activity-item">
-                    <span class="activity-time">${log.time}</span> - 
-                    <span class="activity-action">${log.action}</span>
-                </div>
-            `).join('');
+            
+            content.innerHTML = activityLog.map(log => {
+                const isConfined = log.action === 'CONFINADO';
+                const icon = isConfined ? '🔒' : '🔓';
+                const type = isConfined ? 'confined' : 'open';
+                
+                return `
+                    <div class="activity-item ${type}">
+                        <div>
+                            <span class="activity-icon">${icon}</span>
+                            <span class="activity-action">${log.action}</span>
+                        </div>
+                        <span class="activity-time">${log.time}</span>
+                    </div>
+                `;
+            }).join('');
         }
         
         function toggleAnnexForm() {
@@ -582,9 +598,10 @@
         
         checkStatus();
         updateTimer();
+        loadActivityLog();
         setInterval(updateTimer, 1000);
         setInterval(checkStatus, 500);
-        loadActivityLog();
+        setInterval(loadActivityLog, 2000);
     </script>
 </body>
 </html>
