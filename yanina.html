@@ -26,19 +26,6 @@
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
         }
-        .badge {
-            background: rgba(100, 116, 139, 0.2);
-            border: 1px solid #64748b;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            font-size: 0.65rem;
-            color: #cbd5e1;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
         .header {
             text-align: center;
             margin-bottom: 2rem;
@@ -152,8 +139,6 @@
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
             margin-bottom: 1rem;
-            opacity: 0.4;
-            pointer-events: none;
         }
         button {
             padding: 1.2rem;
@@ -163,29 +148,51 @@
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #334155;
+        }
+        button.confined-active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        button.open-active {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+        }
+        button.inactive {
             background: #334155;
             color: #64748b;
-            border: 1px solid #334155;
         }
-        .info-box {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
-        .info-label {
-            font-size: 0.65rem;
-            color: #64748b;
-            font-weight: 700;
+        .notify-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 10px;
+            font-weight: 900;
             text-transform: uppercase;
+            font-size: 0.75rem;
             letter-spacing: 1px;
-            margin-bottom: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-        .info-value {
-            font-size: 0.9rem;
-            color: #60a5fa;
-            font-weight: 700;
+        .notify-btn:hover { opacity: 0.9; }
+        .notify-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .directrices {
             background: rgba(15, 23, 42, 0.6);
@@ -241,11 +248,44 @@
             text-transform: uppercase;
             letter-spacing: 2px;
         }
+        .badge {
+            background: rgba(100, 116, 139, 0.2);
+            border: 1px solid #64748b;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            color: #cbd5e1;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .info-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .info-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        .info-value {
+            font-size: 0.9rem;
+            color: #60a5fa;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="badge">🔒 Panel Solo Lectura</div>
+        <div class="badge">🔒 SOLO LECTURA - YANINA</div>
         
         <div class="header">
             <div class="icon-container">
@@ -279,11 +319,14 @@
             </div>
 
             <div>
-                <p class="control-label">Panel de Control - Deshabilitado</p>
+                <p class="control-label">Panel de Control de la Propiedad</p>
                 <div class="button-group">
-                    <button disabled>Jaula Cerrada</button>
-                    <button disabled>Abierto / Higiene</button>
+                    <button id="btnConfined" class="confined-active" disabled>Jaula Cerrada</button>
+                    <button id="btnOpen" class="inactive" disabled>Abierto / Higiene</button>
                 </div>
+                <button class="notify-btn" disabled style="opacity: 0.5; cursor: not-allowed;">
+                    ✓ Notificar Cambio a Yanina
+                </button>
             </div>
 
             <div class="info-box">
@@ -323,6 +366,8 @@
             document.getElementById('statusText').textContent = confined ? 'CONFINADO' : 'ABIERTO / HIGIENE';
             document.getElementById('statusText').className = confined ? 'status-text confined' : 'status-text open';
             document.getElementById('statusBox').className = confined ? 'status-box' : 'status-box open';
+            document.getElementById('btnConfined').className = confined ? 'confined-active' : 'inactive';
+            document.getElementById('btnOpen').className = confined ? 'inactive' : 'open-active';
             
             const timestamp = localStorage.getItem('timestamp');
             if (timestamp) {
