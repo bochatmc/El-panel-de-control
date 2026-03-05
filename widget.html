@@ -1,11 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Widget Status Display</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    <title>Estado 950321</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #020617; 
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+        .widget-card {
+            width: 280px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 2.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 50px -12px rgba(0,0,0,0.8), 0 0 30px rgba(59, 130, 246, 0.05);
+            text-align: center;
+        }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 0 10px currentColor;
+        }
+        .indicator.confined { background: #f59e0b; color: #f59e0b; }
+        .indicator.open { 
+            background: #ef4444; 
+            color: #ef4444;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+        .status-text {
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            font-family: 'JetBrains+Mono', monospace;
+        }
+        .status-text.confined { color: #f59e0b; }
+        .status-text.open { color: #ef4444; }
+        .label {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+        .footer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #334155;
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Status: 950321</h1>
+    <div class="widget-card">
+        <div class="indicator" id="indicator"></div>
+        <p class="label">Estado Actual</p>
+        <h2 class="status-text" id="status">CONFINADO</h2>
+        <div class="footer">Sujeto 950321</div>
+    </div>
+
+    <script>
+        async function updateWidget() {
+            const status = localStorage.getItem('michal_status') || 'CONFINADO';
+            const statusEl = document.getElementById('status');
+            const indicatorEl = document.getElementById('indicator');
+            
+            statusEl.textContent = status;
+            statusEl.className = `status-text ${status === 'CONFINADO' ? 'confined' : 'open'}`;
+            indicatorEl.className = `indicator ${status === 'CONFINADO' ? 'confined' : 'open'}`;
+        }
+
+        updateWidget();
+        setInterval(updateWidget, 1000);
+
+        const params = new URLSearchParams(window.location.search);
+        const s = params.get('s');
+        if (s) {
+            const status = s === 'C' ? 'CONFINADO' : 'ABIERTO / HIGIENE';
+            localStorage.setItem('michal_status', status);
+            updateWidget();
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    </script>
 </body>
 </html>
