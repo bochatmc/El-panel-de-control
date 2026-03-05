@@ -3,21 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Michal</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Michal Dashboard</title>
+    <style>
+        body { background-color: #121212; color: white; font-family: Arial, sans-serif; }
+        header { text-align: center; padding: 1em; }
+        .timer { font-size: 2em; margin: 20px 0; }
+        .activity-log { margin: 20px; }
+        .log-entry { background: #1e1e1e; padding: 10px; margin: 5px; border-radius: 5px;}
+    </style>
 </head>
 <body>
     <header>
-        <h1>Welcome to Michal's Control Panel</h1>
+        <h1>Welcome to the Michal Dashboard</h1>
+        <div class="timer" id="timer"></div>
     </header>
-    <main>
-        <section>
-            <h2>Dashboard</h2>
-            <p>Your content goes here.</p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2026 Michal. All Rights Reserved.</p>
-    </footer>
+    <div class="activity-log" id="activity-log"></div>
+
+    <script>
+        // Timer Functionality
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('timer').innerText = now.toUTCString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Activity Log Functionality using Supabase
+        const { createClient } = supabase;
+        const supabaseUrl = 'YOUR_SUPABASE_URL';
+        const supabaseKey = 'YOUR_SUPABASE_KEY';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        async function fetchActivityLog() {
+            const { data, error } = await supabase
+                .from('activity_log')
+                .select('*');
+
+            if (error) {
+                console.error('Error fetching activity log:', error);
+            } else {
+                const logElement = document.getElementById('activity-log');
+                data.forEach(log => {
+                    const logEntry = document.createElement('div');
+                    logEntry.className = 'log-entry';
+                    logEntry.innerText = `${log.timestamp}: ${log.action}`;
+                    logElement.appendChild(logEntry);
+                });
+            }
+        }
+        fetchActivityLog();
+    </script>
 </body>
 </html>
