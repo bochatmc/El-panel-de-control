@@ -1,61 +1,373 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Michal Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #020617; color: #fff; font-family: Arial; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        .card { background: #1e293b; padding: 2rem; border-radius: 20px; max-width: 400px; text-align: center; border: 1px solid #334155; }
-        h1 { color: #60a5fa; margin: 0 0 0.5rem 0; }
-        .timer { font-size: 3rem; font-weight: bold; color: #3b82f6; margin: 2rem 0; font-family: monospace; }
-        button { padding: 1rem; margin: 0.5rem; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 48%; }
-        button.red { background: #dc2626; }
-        .status { font-size: 1.5rem; font-weight: bold; color: #f59e0b; margin: 1rem 0; }
-        .status.open { color: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #0f172a; 
+            color: #e2e8f0; 
+            font-family: 'Inter', sans-serif;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            padding: 1.5rem;
+        }
+        .card { 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 30px; 
+            padding: 2rem; 
+            max-width: 450px; 
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #334155;
+        }
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: radial-gradient(circle, #1e40af 0%, #0c4a6e 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #3b82f6;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+        .icon-container svg { width: 50px; height: 50px; }
+        h1 { 
+            font-size: 2rem; 
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+        .subtitle { 
+            font-size: 0.7rem; 
+            color: #60a5fa;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .content { display: flex; flex-direction: column; gap: 1.5rem; }
+        .timer-label { 
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .timer-container {
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+        .timer-line {
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 2px;
+            margin-bottom: 1rem;
+        }
+        .timer { 
+            font-size: 3.5rem; 
+            font-weight: 900;
+            color: white;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid #334155;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .status-box {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .status-box.open {
+            background: rgba(127, 29, 29, 0.2);
+            border-color: #dc2626;
+        }
+        .status-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.8rem;
+        }
+        .status-text {
+            font-size: 1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .status-text.confined { color: #f59e0b; }
+        .status-text.open { color: #ef4444; }
+        .control-label {
+            font-size: 0.6rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        button {
+            padding: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #334155;
+        }
+        button.confined-active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        button.open-active {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+        }
+        button.inactive {
+            background: #334155;
+            color: #64748b;
+        }
+        .notify-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .notify-btn:hover { opacity: 0.9; }
+        .directrices {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .directrices-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        .directrices-title {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .directrices-contract {
+            font-size: 0.65rem;
+            color: #3b82f6;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+        .directrices-list {
+            list-style: none;
+        }
+        .directrices-item {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            display: flex;
+            gap: 0.75rem;
+        }
+        .directrices-item:last-child { margin-bottom: 0; }
+        .bullet { font-weight: 900; min-width: 1rem; }
+        .bullet.blue { color: #3b82f6; }
+        .bullet.red { color: #ef4444; }
+        .footer {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #334155;
+            font-size: 0.5rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .badge {
+            background: rgba(100, 116, 139, 0.2);
+            border: 1px solid #64748b;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            color: #cbd5e1;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .disabled { opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>MICHAL</h1>
-        <p>Propiedad de Yanina Colombo</p>
-        <div class="timer" id="timer">00:00:00</div>
-        <p>Estado: <span class="status" id="status">CONFINADO</span></p>
-        <button onclick="setStatus('CONFINADO')">Jaula Cerrada</button>
-        <button class="red" onclick="setStatus('ABIERTO')">Abierto</button>
-        <button onclick="sendWhatsApp()" style="width: 100%; margin-top: 1rem; background: #25d366;">📱 Notificar a Yanina</button>
+        <div class="header">
+            <div class="icon-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+            </div>
+            <h1>Sujeto 950321</h1>
+            <p class="subtitle">Propiedad de Yanina Colombo</p>
+        </div>
+
+        <div class="content">
+            <div>
+                <p class="timer-label">Tiempo Total en Castidad</p>
+                <div class="timer-container">
+                    <div class="timer-line"></div>
+                    <div class="timer" id="timer">10:32:43</div>
+                </div>
+            </div>
+
+            <div class="status-grid">
+                <div class="status-box" id="statusBox">
+                    <p class="status-label">Estado Físico</p>
+                    <p class="status-text confined" id="statusText">Confinado</p>
+                </div>
+                <div class="status-box">
+                    <p class="status-label">Pruebas</p>
+                    <p class="status-text" style="color: #a855f7;">Requeridas</p>
+                </div>
+            </div>
+
+            <div>
+                <p class="control-label">Panel de Control de la Propiedad</p>
+                <div class="button-group">
+                    <button id="btnConfined" class="confined-active" onclick="setStatus('CONFINADO')">Jaula Cerrada</button>
+                    <button id="btnOpen" class="inactive" onclick="setStatus('ABIERTO')">Abierto / Higiene</button>
+                </div>
+                <button class="notify-btn" onclick="sendWhatsApp()">
+                    ✓ Notificar Cambio a Yanina
+                </button>
+            </div>
+
+            <div class="directrices">
+                <div class="directrices-header">
+                    <span class="directrices-title">Directrices</span>
+                    <span class="directrices-contract">Contrato Colombo-Bochat</span>
+                </div>
+                <ul class="directrices-list">
+                    <li class="directrices-item">
+                        <span class="bullet blue">●</span>
+                        <span>Castidad 24/7. Llaves bajo custodia absoluta de la Reina.</span>
+                    </li>
+                    <li class="directrices-item">
+                        <span class="bullet blue">●</span>
+                        <span>Reportes Visuales requeridos: Entrega obligatoria de pruebas fotográficas pre y post ducha.</span>
+                    </li>
+                    <li class="directrices-item">
+                        <span class="bullet red">●</span>
+                        <span>La desobediencia implica consecuencias de acuerdo con la cláusula novena del contrato.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer">Vinculación Digital Perpetua</div>
+        </div>
     </div>
 
     <script>
         let status = localStorage.getItem('status') || 'CONFINADO';
-        document.getElementById('status').textContent = status;
+        
+        function updateUI() {
+            const confined = status === 'CONFINADO';
+            document.getElementById('statusText').textContent = confined ? 'CONFINADO' : 'ABIERTO / HIGIENE';
+            document.getElementById('statusText').className = confined ? 'status-text confined' : 'status-text open';
+            document.getElementById('statusBox').className = confined ? 'status-box' : 'status-box open';
+            document.getElementById('btnConfined').className = confined ? 'confined-active' : 'inactive';
+            document.getElementById('btnOpen').className = confined ? 'inactive' : 'open-active';
+        }
         
         function updateTimer() {
             const start = new Date('2026-03-04T20:00:00');
             const now = new Date();
             const diff = now - start;
             if (diff > 0) {
-                const h = Math.floor(diff / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
-                document.getElementById('timer').textContent = 
+                const d = Math.floor(diff / (1000*60*60*24));
+                const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+                const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+                const s = Math.floor((diff % (1000*60)) / 1000);
+                const display = (d > 0 ? d + 'd ' : '') + 
                     String(h).padStart(2, '0') + ':' + 
                     String(m).padStart(2, '0') + ':' + 
                     String(s).padStart(2, '0');
+                document.getElementById('timer').textContent = display;
             }
         }
         
         function setStatus(s) {
             status = s;
             localStorage.setItem('status', s);
-            document.getElementById('status').textContent = s;
-            document.getElementById('status').className = s === 'CONFINADO' ? 'status' : 'status open';
+            localStorage.setItem('timestamp', new Date().toLocaleString('es-ES'));
+            updateUI();
         }
         
         function sendWhatsApp() {
-            const url = window.location.href.replace('index.html', 'yanina.html');
-            const msg = 'Estado: ' + status + '. Ver aquí: ' + url;
+            const url = window.location.href.split('?')[0].replace('index.html', '') + 'yanina.html';
+            const msg = 'Estado actual: ' + status + '. Verifica aquí: ' + url;
             window.open('https://wa.me/34657442002?text=' + encodeURIComponent(msg), '_blank');
         }
         
+        updateUI();
         updateTimer();
         setInterval(updateTimer, 1000);
     </script>
