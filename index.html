@@ -2,71 +2,135 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Control de Michal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Michal</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial; background: #020617; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .card { background: #1e293b; padding: 2rem; border-radius: 20px; max-width: 400px; border: 1px solid #334155; }
-        h1 { color: #60a5fa; margin-bottom: 1rem; text-align: center; }
-        .timer { font-size: 2.5rem; font-weight: bold; color: #3b82f6; margin: 1.5rem 0; text-align: center; }
-        button { background: #2563eb; color: white; border: none; padding: 1rem; border-radius: 8px; margin: 0.5rem; cursor: pointer; width: 100%; font-weight: bold; }
-        button.red { background: #dc2626; }
+        body { font-family: Arial, sans-serif; background: #020617; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .card { background: #1e293b; padding: 2rem; border-radius: 15px; max-width: 400px; border: 1px solid #334155; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        h1 { color: #60a5fa; margin-bottom: 1rem; text-align: center; font-size: 1.5rem; }
+        .subtitle { color: #94a3b8; text-align: center; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .timer { font-size: 3rem; font-weight: bold; color: #3b82f6; margin: 1.5rem 0; text-align: center; font-family: monospace; }
+        .button-group { display: grid; gap: 10px; }
+        button { padding: 1rem; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; text-transform: uppercase; transition: all 0.3s; }
+        .btn-blue { background: #2563eb; color: white; }
+        .btn-red { background: #dc2626; color: white; }
         button:hover { opacity: 0.9; }
-        .timestamp { background: rgba(15,23,42,0.5); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center; font-size: 0.9rem; }
+        button:active { transform: scale(0.95); }
+        .section { background: rgba(15,23,42,0.5); padding: 1rem; border-radius: 8px; margin: 1rem 0; border: 1px solid #334155; }
+        .label { color: #64748b; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .status { font-size: 1.2rem; font-weight: bold; color: #f59e0b; }
+        .status.open { color: #ef4444; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .timestamp { color: #60a5fa; font-size: 0.9rem; }
     </style>
 </head>
 <body>
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useEffect } = React;
+        
         function App() {
             const [timer, setTimer] = useState("00:00:00");
-            const [status, setStatus] = useState(() => localStorage.getItem('status') || "CONFINADO");
-            const [time, setTime] = useState(() => localStorage.getItem('timestamp') || "Nunca");
+            const [status, setStatus] = useState(() => localStorage.getItem('michal_status') || "CONFINADO");
+            const [timestamp, setTimestamp] = useState(() => localStorage.getItem('michal_timestamp') || "Nunca");
 
             useEffect(() => {
-                const interval = setInterval(() => {
-                    const start = new Date('2026-03-04T20:00:00');
+                const startDate = new Date('2026-03-04T20:00:00');
+                
+                const updateTimer = () => {
                     const now = new Date();
-                    const diff = now - start;
+                    const diff = now - startDate;
                     if (diff > 0) {
-                        const h = Math.floor(diff / 3600000);
-                        const m = Math.floor((diff % 3600000) / 60000);
-                        const s = Math.floor((diff % 60000) / 1000);
-                        setTimer(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+                        const totalSeconds = Math.floor(diff / 1000);
+                        const hours = Math.floor(totalSeconds / 3600);
+                        const minutes = Math.floor((totalSeconds % 3600) / 60);
+                        const seconds = totalSeconds % 60;
+                        setTimer(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
                     }
-                }, 1000);
+                };
+
+                updateTimer();
+                const interval = setInterval(updateTimer, 1000);
                 return () => clearInterval(interval);
             }, []);
 
-            function changeStatus(s) {
-                setStatus(s);
-                localStorage.setItem('status', s);
-                const now = new Date().toLocaleString('es-ES');
-                setTime(now);
-                localStorage.setItem('timestamp', now);
+            const changeStatus = (newStatus) => {
+                setStatus(newStatus);
+                localStorage.setItem('michal_status', newStatus);
                 
-                const code = s === 'CONFINADO' ? 'C' : 'A';
-                const url = window.location.href.split('?')[0].replace('index.html', 'yanina.html') + '?s=' + code;
-                const msg = `Estado: ${s}. Verifica: ${url}`;
-                window.open(`https://wa.me/34657442002?text=${encodeURIComponent(msg)}`, '_blank');
-            }
+                const now = new Date().toLocaleString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                setTimestamp(now);
+                localStorage.setItem('michal_timestamp', now);
+
+                // Generar link para Yanina
+                const code = newStatus === 'CONFINADO' ? 'C' : 'A';
+                const baseUrl = window.location.href.split('?')[0].replace('index.html', '');
+                const syncUrl = `${baseUrl}yanina.html?s=${code}`;
+                const message = `Dueña, mi estado ha cambiado a: ${newStatus}. Verifica aquí: ${syncUrl}`;
+                
+                window.open(`https://wa.me/34657442002?text=${encodeURIComponent(message)}`, '_blank');
+            };
 
             return (
                 <div className="card">
-                    <h1>Michal - Panel de Control</h1>
-                    <div className="timer">{timer}</div>
-                    <p style={{textAlign:'center'}}>Estado: <strong>{status}</strong></p>
-                    <button onClick={() => changeStatus('CONFINADO')}>Jaula Cerrada</button>
-                    <button className="red" onClick={() => changeStatus('ABIERTO / HIGIENE')}>Abierto / Higiene</button>
-                    <div className="timestamp">Última actualización: <br/><strong>{time}</strong></div>
+                    <h1>🔐 Michal</h1>
+                    <p className="subtitle">Propiedad de Yanina Colombo</p>
+                    
+                    <div className="section">
+                        <p className="label">⏱️ Tiempo en Castidad</p>
+                        <div className="timer">{timer}</div>
+                    </div>
+
+                    <div className="section">
+                        <p className="label">Estado Físico</p>
+                        <p className={`status ${status === 'CONFINADO' ? '' : 'open'}`}>{status}</p>
+                    </div>
+
+                    <div className="button-group">
+                        <button 
+                            className="btn-blue" 
+                            onClick={() => changeStatus('CONFINADO')}
+                            style={{background: status === 'CONFINADO' ? '#2563eb' : '#334155'}}
+                        >
+                            🔒 Jaula Cerrada
+                        </button>
+                        <button 
+                            className="btn-red" 
+                            onClick={() => changeStatus('ABIERTO / HIGIENE')}
+                            style={{background: status === 'ABIERTO / HIGIENE' ? '#dc2626' : '#334155'}}
+                        >
+                            🚿 Abierto / Higiene
+                        </button>
+                    </div>
+
+                    <div className="section">
+                        <p className="label">📲 Última Actualización</p>
+                        <p className="timestamp">{timestamp}</p>
+                    </div>
+
+                    <div className="section">
+                        <p className="label">📋 Contrato</p>
+                        <ul style={{fontSize: '0.9rem', marginLeft: '1rem', color: '#94a3b8'}}>
+                            <li>Castidad 24/7</li>
+                            <li>Fotos pre y post ducha</li>
+                            <li>Obediencia total</li>
+                        </ul>
+                    </div>
                 </div>
             );
         }
+
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
