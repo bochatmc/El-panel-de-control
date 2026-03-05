@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Panel Yanina</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -264,8 +265,6 @@
             color: #60a5fa;
             font-weight: 700;
         }
-        
-        /* Activity Log Styles */
         .activity-section {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid #334155;
@@ -335,12 +334,6 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-        .activity-icon {
-            font-size: 1rem;
-            margin-right: 0.5rem;
-        }
-        
-        /* Annex Section */
         .annex-section {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid #334155;
@@ -510,14 +503,20 @@
     </div>
 
     <script>
+        const SUPABASE_URL = 'https://fqhgvjnbxyiwhajedwut.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_R1SJPawU56LPtwjjI-mebA_YovmaKDb';
+        
+        const { createClient } = window.supabase;
+        const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        let activityLog = [];
+        
         function checkStatus() {
             const status = localStorage.getItem('status') || 'CONFINADO';
             const confined = status === 'CONFINADO';
             document.getElementById('statusText').textContent = confined ? 'CONFINADO' : 'ABIERTO / HIGIENE';
             document.getElementById('statusText').className = confined ? 'status-text confined' : 'status-text open';
             document.getElementById('statusBox').className = confined ? 'status-box' : 'status-box open';
-            document.getElementById('btnConfined').className = confined ? 'confined-active' : 'inactive';
-            document.getElementById('btnOpen').className = confined ? 'inactive' : 'open-active';
             
             const timestamp = localStorage.getItem('timestamp');
             if (timestamp) {
@@ -542,17 +541,24 @@
             }
         }
         
-        function toggleActivityLog() {
-            const list = document.getElementById('activityList');
-            list.classList.toggle('show');
-            if (list.classList.contains('show')) {
-                loadActivityLog();
+        async function loadActivityLog() {
+            try {
+                const { data, error } = await client
+                    .from('activity_log')
+                    .select('*')
+                    .order('id', { ascending: false });
+                
+                if (error) throw error;
+                
+                activityLog = data || [];
+                displayActivityLog();
+            } catch (e) {
+                console.log('Error cargando:', e);
             }
         }
         
-        function loadActivityLog() {
+        function displayActivityLog() {
             const content = document.getElementById('activityContent');
-            let activityLog = JSON.parse(localStorage.getItem('michal_activity_log')) || [];
             
             if (activityLog.length === 0) {
                 content.innerHTML = '<div class="activity-item" style="border-left-color: #64748b; background: transparent; color: #64748b;">Sin actividades registradas</div>';
@@ -567,13 +573,18 @@
                 return `
                     <div class="activity-item ${type}">
                         <div>
-                            <span class="activity-icon">${icon}</span>
+                            <span>${icon}</span>
                             <span class="activity-action">${log.action}</span>
                         </div>
-                        <span class="activity-time">${log.time}</span>
+                        <span class="activity-time">${log.gmt_time}</span>
                     </div>
                 `;
             }).join('');
+        }
+        
+        function toggleActivityLog() {
+            const list = document.getElementById('activityList');
+            list.classList.toggle('show');
         }
         
         function toggleAnnexForm() {
@@ -596,12 +607,20 @@
             document.getElementById('annexForm').classList.remove('show');
         }
         
+        // Escuchar cambios en tiempo real
+        const subscription = client
+            .channel('activity_channel')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity_log' }, (payload) => {
+                loadActivityLog();
+            })
+            .subscribe();
+        
         checkStatus();
         updateTimer();
         loadActivityLog();
         setInterval(updateTimer, 1000);
         setInterval(checkStatus, 500);
-        setInterval(loadActivityLog, 2000);
+        setInterval(loadActivityLog, 3000);
     </script>
 </body>
 </html>
