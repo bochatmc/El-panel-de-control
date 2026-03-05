@@ -3,18 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Michal Control</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Michal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .badge {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .activity-log {
+            margin-top: 20px;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <div class="badge">New Badge Text</div>
-    <h1>New H1 Title</h1>
+    <div class="badge">👤 CONTROL MICHAL</div>
+    <h1>Michal</h1>
+    <h2>Panel de Control</h2>
+    <div id="header-text">Welcome to the Michal Control Panel!</div>
+    <div id="timer"></div>
+    <div class="activity-log" id="activity-log"></div>
+
+    <script src="https://cdn.supabase.io/your-project-url-js.js"></script>
     <script>
-        // Ensure to use the correct Supabase initialization
-        const { createClient } = supabase;
-        const supabaseUrl = '<YOUR_SUPABASE_URL>';
-        const supabaseKey = '<YOUR_SUPABASE_KEY>';
-        window.supabase = createClient(supabaseUrl, supabaseKey);
+        const { createClient } = window.supabase;
+        const supabase = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY');
+
+        // Update timer every second
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('timer').innerText = now.toUTCString();
+        }, 1000);
+
+        // Function to log activity
+        function logActivity(message) {
+            const logDiv = document.getElementById('activity-log');
+            logDiv.innerHTML += `<p>${message}</p>`;
+            // Push to Supabase (replace 'activities' with your table name)
+            supabase.from('activities').insert([{ message: message, timestamp: new Date() }]);
+        }
+
+        // Example usage of logActivity
+        logActivity('User accessed the control panel.');
+
+        // Example for real-time updates (assuming a table `updates` exists)
+        supabase
+            .from('updates')
+            .on('INSERT', payload => {
+                logActivity(`New update: ${payload.new.message}`);
+            })
+            .subscribe();
     </script>
 </body>
 </html>
