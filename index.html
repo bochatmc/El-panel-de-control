@@ -1,58 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Panel</title>
+    <title>Control - 950321</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
-        }
-        .container {
-            margin: 20px auto;
-            max-width: 600px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        button {
-            padding: 10px;
-            border: none;
-            background: #5bc0de;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #31b0d5;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #020617; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .card { background: #1e293b; padding: 2rem; border-radius: 20px; max-width: 400px; text-align: center; }
+        h1 { color: #60a5fa; margin-bottom: 1rem; }
+        .timer { font-size: 2.5rem; font-weight: bold; color: #3b82f6; margin: 1.5rem 0; }
+        button { background: #2563eb; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; margin: 0.5rem; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        .red { background: #dc2626; }
+        .red:hover { background: #b91c1c; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Control Panel</h1>
-    </header>
-    <div class="container">
-        <h2>Current Date and Time: <span id="datetime"></span></h2>
-        <button onclick="refreshTime()">Refresh Time</button>
+    <div class="card">
+        <h1>Sujeto 950321</h1>
+        <p>Propiedad de Yanina Colombo</p>
+        <div class="timer" id="timer">00:00:00</div>
+        <button onclick="setStatus('CONFINADO')">Jaula Cerrada</button>
+        <button class="red" onclick="setStatus('ABIERTO')">Abierto / Higiene</button>
+        <button onclick="share()">Notificar</button>
     </div>
     <script>
-        function refreshTime() {
+        let status = localStorage.getItem('status') || 'CONFINADO';
+        const start = new Date('2026-03-04T20:00:00');
+        function update() {
             const now = new Date();
-            document.getElementById('datetime').innerText = now.toUTCString();
+            const diff = now - start;
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            document.getElementById('timer').textContent = 
+                (h < 10 ? '0' : '') + h + ':' + 
+                (m < 10 ? '0' : '') + m + ':' + 
+                (s < 10 ? '0' : '') + s;
         }
-        // Initial load
-        refreshTime();
+        function setStatus(s) { 
+            status = s; 
+            localStorage.setItem('status', s); 
+            alert('Estado: ' + s); 
+        }
+        function share() { 
+            window.open('https://wa.me/?text=Estado: ' + status, '_blank'); 
+        }
+        update();
+        setInterval(update, 1000);
     </script>
 </body>
 </html>
